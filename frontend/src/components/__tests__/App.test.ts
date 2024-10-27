@@ -25,10 +25,20 @@ describe('deve testar o fluxo de checkout', () => {
 
     await wrapper.findAll('.button-add-product').at(0)?.trigger('click')
     await wrapper.findAll('.button-add-product').at(0)?.trigger('click')
-    expect(wrapper.get('.label-total').text()).toBe('200')
+    await wrapper.findAll('.button-add-product').at(0)?.trigger('click')
+    expect(wrapper.get('.label-total').text()).toBe('300')
 
     expect(wrapper.findAll('.label-cart-item-description').at(0)?.text()).toBe('A')
+    expect(wrapper.findAll('.label-cart-item-quantity').at(0)?.text()).toBe('3')
+
+    await wrapper.findAll('.button-cart-item-decrement').at(0)?.trigger('click')
+    await wrapper.findAll('.button-cart-item-decrement').at(0)?.trigger('click')
+    expect(wrapper.findAll('.label-cart-item-quantity').at(0)?.text()).toBe('1')
+
+    await wrapper.findAll('.button-cart-item-increment').at(0)?.trigger('click')
     expect(wrapper.findAll('.label-cart-item-quantity').at(0)?.text()).toBe('2')
+
+
 
   })
 })
