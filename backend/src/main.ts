@@ -9,6 +9,7 @@ async function main() {
         res.json('ok')
     })
     app.get('/products', function (req, res) {
+        console.log('/products')
         res.json([
             { productId: 1, description: 'A', price: 100 },
             { productId: 2, description: 'B', price: 200 },
