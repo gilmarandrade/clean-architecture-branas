@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 import App from '@/App.vue'
-import { ProductsGatewayHttp } from '@/infra/gateway/ProductsGateway'
+import { ProductsGatewayFake } from '@/infra/gateway/ProductsGateway'
 
 function sleep(time: number) {
   return new Promise((resolve) => {
@@ -17,7 +17,7 @@ describe('deve testar o fluxo de checkout', () => {
     const wrapper = mount(App, {
       global: {
         provide: {
-          productsGateway: new ProductsGatewayHttp()
+          productsGateway: new ProductsGatewayFake()
         }
       }
     })
