@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
-import pgp from 'pg-promise'
+import GetProducts from './application/GetProducts'
+import { ProductDAODatabase } from './infra/dao/ProductDAO'
+import { PgPromiseAdapter } from './infra/database/DatabaseConnection'
 
 async function main() {
     const app = express()
@@ -10,15 +12,13 @@ async function main() {
         res.json('ok')
     })
     app.get('/products', async function (req, res) {
-        const connection = pgp()("postgres://postgres:123456@localhost:5432/app")
-        const products = await connection.query("select * from branas.product", [])
-        console.log('/products', products)
-        await connection.$pool.end()
-        res.json(products.map((product: any) => ({
-            productId: product.product_id,
-            description: product.description,
-            price: parseFloat(product.price)
-        })))
+        const databaseConnection = new PgPromiseAdapter()
+        const productDAO = new ProductDAODatabase(databaseConnection)
+        const getProducts = new GetProducts(productDAO)
+        const output = await getProducts.execute()
+        await databaseConnection.close()
+        console.log('/products')
+        res.json(output)
     })
     app.listen(3000, () => console.log('listening on port 3000'))
 }
