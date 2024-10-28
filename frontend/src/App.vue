@@ -1,10 +1,14 @@
 <script setup lang="ts">
+// use case component
+
 import { inject, ref } from 'vue';
 import type ProductsGateway from './infra/gateway/ProductsGateway';
+import Checkout from './domain/Checkout';
+import type Product from './domain/Product';
 
-  const products = ref<any>([])
-  const items = ref<any>([])
-
+  const checkout = ref(new Checkout())
+  const products = ref<Product[]>([])
+  
   const productsGateway = inject('productsGateway') as ProductsGateway
 
   async function loadProducts() {
@@ -12,56 +16,24 @@ import type ProductsGateway from './infra/gateway/ProductsGateway';
     products.value.push(...output)
   }
 
-  function add(product: any) {
-    const item = items.value.find((item: any) => item.productId === product.productId)
-    if(item) {
-      item.quantity++
-    } else {
-      items.value.push({ productId: product.productId, description: product.description, quantity: 1 })
-    }
-  }
-
-  function decrementItem(productId: any) {
-    const item = items.value.find((item: any) => item.productId === productId)
-    if(item && item.quantity > 1) {
-      item.quantity--
-    } else {
-      items.value.splice(items.value.indexOf(item), 1)
-    }
-  }
-
-  function incrementItem(productId: any) {
-    const item = items.value.find((item: any) => item.productId === productId)
-    item.quantity++
-  }
-
-  function getTotal() {
-    let total = 0
-    for(const item of items.value) {
-      const product = products.value.find((product: any) => product.productId === item.productId)
-      if(!product) throw new Error()
-      total += product.price * item.quantity
-    }
-    return total
-  }
 
   loadProducts()
 </script>
 
 <template>
   <div>
-    <div class="label-total">{{getTotal()}}</div>
-    <div v-for="item in items">
+    <div class="label-total">{{checkout.getTotal(products)}}</div>
+    <div v-for="item in checkout.items">
       <div class="label-cart-item-description">{{ item.description }}</div>
       <div class="label-cart-item-quantity">{{ item.quantity }}</div>
-      <button class="button-cart-item-decrement" @click="decrementItem(item.productId)">-</button>
-      <button class="button-cart-item-increment" @click="incrementItem(item.productId)">+</button>
+      <button class="button-cart-item-decrement" @click="checkout.decrementItem(item.productId)">-</button>
+      <button class="button-cart-item-increment" @click="checkout.incrementItem(item.productId)">+</button>
     </div>
     <hr/>
     <div v-for="product in products">
       <div class="label-product-description">{{ product.description }}</div>
       <div class="label-product-price">{{ product.price }}</div>
-      <button class="button-add-product" @click="add(product)" >add</button>
+      <button class="button-add-product" @click="checkout.add(product)" >add</button>
     </div>
   </div>
 </template>
