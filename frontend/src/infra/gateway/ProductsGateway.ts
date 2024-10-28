@@ -1,11 +1,17 @@
+import type HttpClient from "../http/HttpClient"
+
 export default interface ProductsGateway {
     getProducts(): Promise<Output[]>   
 }
 
 export class ProductsGatewayHttp implements ProductsGateway {
+
+    constructor(readonly httpClient: HttpClient) {
+
+    }
+
     async getProducts(): Promise<Output[]> {
-        const response = await fetch('http://localhost:3000/products')
-        return response.json()
+        return this.httpClient.get('http://localhost:3000/products')
     }
     
 }
