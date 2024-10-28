@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import pgp from 'pg-promise'
 
 async function main() {
     const app = express()
@@ -8,13 +9,16 @@ async function main() {
         console.log('ok')
         res.json('ok')
     })
-    app.get('/products', function (req, res) {
-        console.log('/products')
-        res.json([
-            { productId: 1, description: 'A', price: 100 },
-            { productId: 2, description: 'B', price: 200 },
-            { productId: 3, description: 'C', price: 400 },
-        ])
+    app.get('/products', async function (req, res) {
+        const connection = pgp()("postgres://postgres:123456@localhost:5432/app")
+        const products = await connection.query("select * from branas.product", [])
+        console.log('/products', products)
+        await connection.$pool.end()
+        res.json(products.map((product: any) => ({
+            productId: product.product_id,
+            description: product.description,
+            price: parseFloat(product.price)
+        })))
     })
     app.listen(3000, () => console.log('listening on port 3000'))
 }
