@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
+import type ProductsGateway from './infra/gateway/ProductsGateway';
 
   const products = ref<any>([])
   const items = ref<any>([])
 
+  const productsGateway = inject('productsGateway') as ProductsGateway
+
   async function loadProducts() {
-    const response = await fetch('http://localhost:3000/products')
-    const output = await response.json()
+    const output = await productsGateway.getProducts()
     products.value.push(...output)
   }
 
